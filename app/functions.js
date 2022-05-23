@@ -1,39 +1,91 @@
-exports = typeof window === 'undefined' ? global : window;
+exports = typeof window === "undefined" ? global : window;
 
 exports.functionsAnswers = {
-  argsAsArray: function(fn, arr) {
+	argsAsArray: function (fn, arr) {
+		return fn.apply(null, arr);
+	},
 
-  },
+	speak: function (fn, obj) {
+		return fn.call(obj);
+	},
 
-  speak: function(fn, obj) {
+	functionFunction: function (str) {
+		return function (arg) {
+			return str + ", " + arg;
+		};
+	},
 
-  },
+	makeClosures: function (arr, fn) {
+		let ret = [];
 
-  functionFunction: function(str) {
+		let makeFn = function (val) {
+			return function () {
+				return fn(val);
+			};
+		};
 
-  },
+		for (let i = 0; i < arr.length; i++) {
+			ret.push(makeFn(arr[i]));
+		}
 
-  makeClosures: function(arr, fn) {
+		return ret;
+	},
 
-  },
+	partial: function (fn, str1, str2) {
+		return function (str3) {
+			return fn(str1, str2, str3);
+		};
+	},
 
-  partial: function(fn, str1, str2) {
+	useArguments: function () {
+		let sum = 0;
 
-  },
+		for (let i = 0; i < arguments.length; i++) {
+			sum += arguments[i];
+		}
 
-  useArguments: function() {
+		return sum;
+	},
 
-  },
+	callIt: function (fn) {
+		let args = Array.prototype.slice.call(arguments, 1, arguments.length);
+		fn.apply(null, args);
+	},
 
-  callIt: function(fn) {
+	partialUsingArguments: function (fn) {
+		let args = Array.prototype.slice.call(arguments, 1, arguments.length);
+		return function () {
+			let moreArgs = args.concat(Array.prototype.slice.call(arguments));
+			return fn.apply(null, moreArgs);
+		};
+	},
 
-  },
+	curryIt: function (fn) {
+		function applyArguments(_fn, args) {
+			return _fn.apply(null, args);
+		}
 
-  partialUsingArguments: function(fn) {
+		function getArgumentAccumulator(
+			accumulatedArguments,
+			expectedArgumentsCount
+		) {
+			return function (currentArgument) {
+				accumulatedArguments.push(currentArgument);
 
-  },
+				var allArgumentsProvided =
+					accumulatedArguments.length === expectedArgumentsCount;
 
-  curryIt: function(fn) {
+				if (allArgumentsProvided) {
+					return applyArguments(fn, accumulatedArguments);
+				}
 
-  }
+				return getArgumentAccumulator(
+					accumulatedArguments,
+					expectedArgumentsCount
+				);
+			};
+		}
+
+		return getArgumentAccumulator([], fn.length);
+	},
 };
